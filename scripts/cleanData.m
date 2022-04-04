@@ -72,7 +72,24 @@ colDescriptions = [
     "Humerus Fracture Diagnosis";
     "Humerus Fracture DX [d from CT]";
     "Pathologic Fracture Diagnosis";
-    "Pathologic Fracture DX [d from CT]"].';
+    "Pathologic Fracture DX [d from CT]";
+    "Alzheimers Diagnosis";
+    "Alzheimers DX [d from CT]";
+    "Primary Cancer Diagnosis";
+    "Primary Cancer DX [d from CT]";
+    "Primary Cancer 2 Diagnosis";
+    "Primary Cancer 2 DX [d from CT]";
+    "Bone Measure, BMD (L1 HU)";
+    "TAT Area (cm2)";
+    "Total Body Area EA (cm2)";
+    "VAT Area (cm2)";
+    "SAT Area (cm2)";
+    "VAT/SAT Ratio";
+    "Muscle HU";
+    "Muscle Area (cm2)";
+    "L3 SMI (cm2/m2)";
+    "AoCa Agaston";
+    "Liver HU (Median)"].';
 
 %% 1 - Clinical F/U interval 
 % Not quite sure how to handle dates?
@@ -263,6 +280,48 @@ X(idx,end) = 1;
 %% 35 - Primary Cancer DX [d from CT]
 X(:,end+1) = data{:,38};
 
+%% 36 - Primary Cancer 2 Diagnosis
+% For now, any comments are taken as a '1', that the person has had a 
+% diagnosis.
+X(idx,end+1) = 0;
+idx = ~ismember(data{:,39},"");
+X(idx,end) = 1;
+
+%% 37 - Primary Cancer 2 DX [d from CT]
+X(:,end+1) = data{:,40};
+
+%% 38 - Bone Measure, BMD (L1 HU)
+X(:,end+1) = data{:,42};
+
+%% 39 - TAT Area (cm2)
+X(:,end+1) = data{:,43};
+
+%% 40 - Total Body Area EA (cm2)
+X(:,end+1) = data{:,44};
+
+%% 41 - VAT Area (cm2)
+X(:,end+1) = data{:,45};
+
+%% 42 - SAT Area (cm2)
+X(:,end+1) = data{:,46};
+
+%% 43 - VAT/SAT Ratio
+X(:,end+1) = data{:,47};
+
+%% 44 - Muscle HU
+X(:,end+1) = data{:,48};
+
+%% 45 - Muscle Area (cm2)
+X(:,end+1) = data{:,49};
+
+%% 46 - L3 SMI (cm2/m2)
+X(:,end+1) = data{:,50};
+
+%% 47 - AoCa Agaston
+X(:,end+1) = data{:,51};
+
+%% 48 - Liver HU (Median)
+X(:,end+1) = data{:,52};
 
 
 
