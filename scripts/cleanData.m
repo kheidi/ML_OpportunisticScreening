@@ -41,7 +41,7 @@ data = readtable('OppScrData.csv', 'VariableNamingRule', 'preserve');
 ID = data(:,1:3);
 
 %% Column Descriptions
-colDescriptions = [
+descriptions = [
     "Clinical F/U Interval";
     "BMI";
     "BMI>30";
@@ -89,49 +89,49 @@ colDescriptions = [
     "Muscle Area (cm2)";
     "L3 SMI (cm2/m2)";
     "AoCa Agaston";
-    "Liver HU (Median)"].';
+    "Liver HU (Median)"];
 
 %% 1 - Clinical F/U interval 
 % Not quite sure how to handle dates?
-X(:,1) = data{:,4};
+data_clean(:,1) = data{:,4};
 
 %% 2 - BMI
-X(:,end+1) = data{:,5};
+data_clean(:,end+1) = data{:,5};
 
 %% 3 - BMI>30, not sure if we should just remove this or if this just provides
 % like extra data that emphasizes that the BMI>30 is an important attribute
 idx = ismember(data{:,6},'Y');
-X(idx,end+1) = 1;
+data_clean(idx,end+1) = 1;
 idx = ismember(data{:,6},'N');
-X(idx,end) = 0;
+data_clean(idx,end) = 0;
 idx = ismember(data{:,6},""); % Some are left blank so I left as NaN for now
-X(idx,end) = NaN;
+data_clean(idx,end) = NaN;
 
 %% 4 - Sex, male = 0, female = 1
 idx = ismember(data{:,7},'Female');
-X(idx,end+1) = 1;
+data_clean(idx,end+1) = 1;
 idx = ismember(data{:,7},'Male');
-X(idx,end) = 0;
+data_clean(idx,end) = 0;
 idx = ismember(data{:,7},"");
-X(idx,end) = NaN;
+data_clean(idx,end) = NaN;
 
 %% 5 - Age at CT
-X(:,end+1) = data{:,8};
+data_clean(:,end+1) = data{:,8};
 
 %% 6 - Tobacco, No = 0, Yes = 1, Unknown = NaN
 idx = ismember(data{:,9},'Yes');
-X(idx,end+1) = 1;
+data_clean(idx,end+1) = 1;
 idx = ismember(data{:,9},'No');
-X(idx,end) = 0;
+data_clean(idx,end) = 0;
 idx = ismember(data{:,9},"");
-X(idx,end) = NaN;
+data_clean(idx,end) = NaN;
 
 %% 7 - Alcohol Abuse, Abuse issue = 1, no abuse = 0
 % For now, any comments are taken as a '1', that the person has an alcohol
 % abuse issue. Need to ask if this is what it means. 
-X(idx,end+1) = 0;
+data_clean(idx,end+1) = 0;
 idx = ~ismember(data{:,10},"");
-X(idx,end) = 1;
+data_clean(idx,end) = 1;
 
 %% 8 - FRS 10-year risk
 temp = erase(data{:,11},"%");
@@ -146,183 +146,201 @@ for i = 1:length(temp)
     end
 end
 temp2 = temp2/100;
-X(:,end+1) = temp2;
+data_clean(:,end+1) = temp2;
+
+clear temp temp2 i
 
 %% 9 - FRAX 10y Fx Prob
-X(:,end+1) = data{:,12};
+data_clean(:,end+1) = data{:,12};
 
 %% 10 - FRAX 10y Hip Fx Prob
-X(:,end+1) = data{:,13};
+data_clean(:,end+1) = data{:,13};
 
 %% 11 - Metabolic Syndrome (more of an outcome)
 idx = ismember(data{:,14},'Y');
-X(idx,end+1) = 1;
+data_clean(idx,end+1) = 1;
 idx = ismember(data{:,14},'N');
-X(idx,end) = 0;
+data_clean(idx,end) = 0;
 idx = ismember(data{:,14},""); % Unknown is NaN for now
-X(idx,end) = NaN;
+data_clean(idx,end) = NaN;
 
 %% 12 - Death T/F
 % If death is on record = 1, else = 0
 % This may be a little redundant with column 13, may need to remove?
-X(:,end+1) = ~isnan(data{:,16});
+data_clean(:,end+1) = ~isnan(data{:,16});
 
 %% 13 - Death Age [d from CT]
-X(:,end+1) = data{:,16};
+data_clean(:,end+1) = data{:,16};
 
 %% 14 - CVD Diagnosis
 % For now, any comments are taken as a '1', that the person has had a CVD
 % diagnosis.
-X(idx,end+1) = 0;
+data_clean(idx,end+1) = 0;
 idx = ~ismember(data{:,17},"");
-X(idx,end) = 1;
+data_clean(idx,end) = 1;
 
 %% 15 - CVD DX [d from CT]
-X(:,end+1) = data{:,18};
+data_clean(:,end+1) = data{:,18};
 
 %% 16 - Heart Failure Diagnosis
 % For now, any comments are taken as a '1', that the person has had a 
 % diagnosis.
-X(idx,end+1) = 0;
+data_clean(idx,end+1) = 0;
 idx = ~ismember(data{:,19},"");
-X(idx,end) = 1;
+data_clean(idx,end) = 1;
 
 %% 17 - Heart failure DX [d from CT]
-X(:,end+1) = data{:,20};
+data_clean(:,end+1) = data{:,20};
 
 %% 18 - MI Diagnosis
 % For now, any comments are taken as a '1', that the person has had a 
 % diagnosis.
-X(idx,end+1) = 0;
+data_clean(idx,end+1) = 0;
 idx = ~ismember(data{:,21},"");
-X(idx,end) = 1;
+data_clean(idx,end) = 1;
 
 %% 19 - MI DX [d from CT]
-X(:,end+1) = data{:,22};
+data_clean(:,end+1) = data{:,22};
 
 %% 20 - Type 2 Diabetes Diagnosis
 % For now, any comments are taken as a '1', that the person has had a 
 % diagnosis.
-X(idx,end+1) = 0;
+data_clean(idx,end+1) = 0;
 idx = ~ismember(data{:,23},"");
-X(idx,end) = 1;
+data_clean(idx,end) = 1;
 
 %% 21 - Type 2 Diabetes DX [d from CT]
-X(:,end+1) = data{:,24};
+data_clean(:,end+1) = data{:,24};
 
 %% 22 - Femoral Neck Fracture Diagnosis
 % For now, any comments are taken as a '1', that the person has had a 
 % diagnosis.
-X(idx,end+1) = 0;
+data_clean(idx,end+1) = 0;
 idx = ~ismember(data{:,25},"");
-X(idx,end) = 1;
+data_clean(idx,end) = 1;
 
 %% 23 - Femoral Neck Fracture DX [d from CT]
-X(:,end+1) = data{:,26};
+data_clean(:,end+1) = data{:,26};
 
 %% 24 - Unspec Femoral Fracture Diagnosis
 % For now, any comments are taken as a '1', that the person has had a 
 % diagnosis.
-X(idx,end+1) = 0;
+data_clean(idx,end+1) = 0;
 idx = ~ismember(data{:,27},"");
-X(idx,end) = 1;
+data_clean(idx,end) = 1;
 
 %% 25 - Unspec Femoral Fracture DX [d from CT]
-X(:,end+1) = data{:,28};
+data_clean(:,end+1) = data{:,28};
 
 %% 26 - Forearm Fracture Diagnosis
 % For now, any comments are taken as a '1', that the person has had a 
 % diagnosis.
-X(idx,end+1) = 0;
+data_clean(idx,end+1) = 0;
 idx = ~ismember(data{:,29},"");
-X(idx,end) = 1;
+data_clean(idx,end) = 1;
 
 %% 27 - Forearm Fracture DX [d from CT]
-X(:,end+1) = data{:,30};
+data_clean(:,end+1) = data{:,30};
 
 %% 28 - Humerus Fracture Diagnosis
 % For now, any comments are taken as a '1', that the person has had a 
 % diagnosis.
-X(idx,end+1) = 0;
+data_clean(idx,end+1) = 0;
 idx = ~ismember(data{:,31},"");
-X(idx,end) = 1;
+data_clean(idx,end) = 1;
 
 %% 29 - Humerus Fracture DX [d from CT]
-X(:,end+1) = data{:,32};
+data_clean(:,end+1) = data{:,32};
 
 %% 30 - Pathologic Fracture Diagnosis
 % For now, any comments are taken as a '1', that the person has had a 
 % diagnosis.
-X(idx,end+1) = 0;
+data_clean(idx,end+1) = 0;
 idx = ~ismember(data{:,33},"");
-X(idx,end) = 1;
+data_clean(idx,end) = 1;
 
 %% 31 - Pathologic Fracture DX [d from CT]
-X(:,end+1) = data{:,34};
+data_clean(:,end+1) = data{:,34};
 
 %% 32 - Alzheimers Diagnosis
 % For now, any comments are taken as a '1', that the person has had a 
 % diagnosis.
-X(idx,end+1) = 0;
+data_clean(idx,end+1) = 0;
 idx = ~ismember(data{:,35},"");
-X(idx,end) = 1;
+data_clean(idx,end) = 1;
 
 %% 33 - Alzheimers DX [d from CT]
-X(:,end+1) = data{:,36};
+data_clean(:,end+1) = data{:,36};
 
 %% 34 - Primary Cancer Diagnosis
 % For now, any comments are taken as a '1', that the person has had a 
 % diagnosis.
-X(idx,end+1) = 0;
+data_clean(idx,end+1) = 0;
 idx = ~ismember(data{:,37},"");
-X(idx,end) = 1;
+data_clean(idx,end) = 1;
 
 %% 35 - Primary Cancer DX [d from CT]
-X(:,end+1) = data{:,38};
+data_clean(:,end+1) = data{:,38};
 
 %% 36 - Primary Cancer 2 Diagnosis
 % For now, any comments are taken as a '1', that the person has had a 
 % diagnosis.
-X(idx,end+1) = 0;
+data_clean(idx,end+1) = 0;
 idx = ~ismember(data{:,39},"");
-X(idx,end) = 1;
+data_clean(idx,end) = 1;
 
 %% 37 - Primary Cancer 2 DX [d from CT]
-X(:,end+1) = data{:,40};
+data_clean(:,end+1) = data{:,40};
 
 %% 38 - Bone Measure, BMD (L1 HU)
-X(:,end+1) = data{:,42};
+data_clean(:,end+1) = data{:,42};
 
 %% 39 - TAT Area (cm2)
-X(:,end+1) = data{:,43};
+data_clean(:,end+1) = data{:,43};
 
 %% 40 - Total Body Area EA (cm2)
-X(:,end+1) = data{:,44};
+data_clean(:,end+1) = data{:,44};
 
 %% 41 - VAT Area (cm2)
-X(:,end+1) = data{:,45};
+data_clean(:,end+1) = data{:,45};
 
 %% 42 - SAT Area (cm2)
-X(:,end+1) = data{:,46};
+data_clean(:,end+1) = data{:,46};
 
 %% 43 - VAT/SAT Ratio
-X(:,end+1) = data{:,47};
+data_clean(:,end+1) = data{:,47};
 
 %% 44 - Muscle HU
-X(:,end+1) = data{:,48};
+data_clean(:,end+1) = data{:,48};
 
 %% 45 - Muscle Area (cm2)
-X(:,end+1) = data{:,49};
+data_clean(:,end+1) = data{:,49};
 
 %% 46 - L3 SMI (cm2/m2)
-X(:,end+1) = data{:,50};
+data_clean(:,end+1) = data{:,50};
 
 %% 47 - AoCa Agaston
-X(:,end+1) = data{:,51};
+data_clean(:,end+1) = data{:,51};
 
 %% 48 - Liver HU (Median)
-X(:,end+1) = data{:,52};
+data_clean(:,end+1) = data{:,52};
 
+% Clean up variables
+clear idx
+
+%% Seperate array into types
+% Clinical Data
+CD = data_clean(:,1:12);
+CD_desc = descriptions(1:10);
+
+% Clinical Outcomes
+% Metabolic syndrome included in clinical data and outcomes.
+CO = data_clean(:,12:37);
+CO_desc = descriptions(12:37);
+
+% Computerized Tomography Data
+CT = data_clean(:,38:48);
+CT_desc = descriptions(38:48);
 
 
 
