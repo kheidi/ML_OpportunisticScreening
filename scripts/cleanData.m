@@ -5,9 +5,9 @@
 % Add data, saved as a .csv, somewhere in your local repository. DO NOT add 
 % this raw data to the git repo as it is PRIVATE.
 
+function [] = cleanData()
+
 %% Import Data
-clear;
-close all;
 data = readtable('OppScrData.csv', 'VariableNamingRule', 'preserve');
 
 %% Excel Key
@@ -342,9 +342,9 @@ CO_desc = descriptions(12:37);
 CT = data_clean(:,38:48);
 CT_desc = descriptions(38:48);
 
+save('dataCleaned.mat')
 
-
-
+end
 
 
 
