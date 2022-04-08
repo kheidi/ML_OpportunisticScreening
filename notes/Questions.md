@@ -5,8 +5,6 @@
 	- Is 'Alcoholabuse,uncomplicated' mean they DO or DO NOT have an alcohol abuse issue?
 	- Remission?
 - FRS 10 year risk, can we say that <1 is neglible, AKA = 0
-- is "Death[d from CT]" just how many days they died after the CT? 
-- if [d from CT] is negative, does that mean that they got the CT before the event occurred?
 - what do fx, hx, and dx mean?
 - I am guessing the "X" in the FRS 10-year risk (%) means unknown or not done? 
 - I have a line that is also highlighted in blue, not sure if that means something?(line 8)
