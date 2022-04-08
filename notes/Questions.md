@@ -8,3 +8,4 @@
 - is "Death[d from CT]" just how many days they died after the CT? 
 - if [d from CT] is negative, does that mean that they got the CT before the event occurred?
 - what do fx, hx, and dx mean?
+- I am guessing the "X" in the FRS 10-year risk (%) means unknown or not done? 
