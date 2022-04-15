@@ -1,5 +1,5 @@
 clear
-data= readmatrix('OppScrData.xlsx');
+data= readmatrix('OppScrData.xlsx'); %change this to Heidi's other file
 %%
 [NumOfPeople, features]=size(data);
 
@@ -19,7 +19,7 @@ for i=1:95
 end
 title('sample size by age')
 
-%% Averaging CT data by age 42:52
+%% Averaging CT data by age 
 
 for age=1:length(IndexByAge)
     for j=IndexByAge{age}
@@ -64,10 +64,9 @@ figure
 scatter(1:95,VAT_SAT_Ratio)
 title('average VAT_SAT_Ratio by age')
       
-        figure
+figure
 scatter(1:95,TAT_Area)
 title('average TAT_Area by age')
-        MuscleHU(age)=nanmean(data(j,48));
         
 figure
 scatter(1:95,Muscle_Area)
