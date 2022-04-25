@@ -42,7 +42,7 @@ ID = data(:,1:3);
 
 %% Column Descriptions
 descriptions = [
-    "Clinical F/U Interval";
+    "Clinical FU Interval";
     "BMI";
     "BMI>30";
     "Sex";
@@ -53,7 +53,7 @@ descriptions = [
     "FRAX 10y Fx Prob";
     "FRAX 10y Hip Fx Prob";
     "Metabolic Syndrome";
-    "Death T/F";
+    "Death TF";
     "Death Age [d from CT]";
     "CVD Diagnosis"
     "CVD DX [d from CT]";
@@ -87,7 +87,7 @@ descriptions = [
     "VAT/SAT Ratio";
     "Muscle HU";
     "Muscle Area (cm2)";
-    "L3 SMI (cm2/m2)";
+    "L3 SMI (cm2m2)";
     "AoCa Agaston";
     "Liver HU (Median)"];
 
@@ -325,8 +325,6 @@ data_clean(:,end+1) = data{:,51};
 %% 48 - Liver HU (Median)
 data_clean(:,end+1) = data{:,52};
 
-
-
 %% Remove all participants that have NaN in their CT data
 CT = data_clean(:,38:48);
 numNaN = sum(isnan(CT),2);
@@ -335,22 +333,28 @@ data_clean(idx_NaN,:) = [];
 
 ID_clean = ID(~idx_NaN,:);
 
-%% Clean up variables
-clear idx numNaN
+
 
 %% Seperate array into types
 % Clinical Data
-CD = data_clean(:,1:12);
-CD_desc = descriptions(1:10);
+CD = data_clean(:,2:12);
+CD_desc = descriptions(2:12);
 
 % Clinical Outcomes
 % Metabolic syndrome included in clinical data and outcomes.
-CO = data_clean(:,12:37);
-CO_desc = descriptions(12:37);
+% Removes dates as well
+cols = [12,14,16,18,20,22,24,26,28,30,32,34,36];
+CO = data_clean(:,cols);
+CO_desc = descriptions(cols);
 
 % Computerized Tomography Data
 CT = data_clean(:,38:48);
 CT_desc = descriptions(38:48);
+
+%% Clean up variables
+clear idx numNaN cols
+
+%% Save mat file
 
 save('dataCleaned.mat')
 
