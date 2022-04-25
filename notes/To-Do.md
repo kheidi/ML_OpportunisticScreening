@@ -14,3 +14,4 @@
 			- **X_test**: Dataset except data["Age"] features with null values
 - Idea: wonder if there is a threshold of how long ago something was diagnosed?
 - Idea: just run a total black box on data to see what happens, what is best ML method for this? Maybe normalize columns? but not transform dates into anything.
+
