@@ -1,0 +1,20 @@
+No more than 8 pages long. Excluding Appendix and references
+
+Abstract: 
+
+Introduction: Describe main ideas and goals
+
+Related/Similar work:
+
+Dataset: Details about where you got it from, who is x, who is y, what is N, what is D, ect. 
+
+Approach: Details of your approach: data cleaning and preprocessing (e.g. strategy to mitigate missing values), method, algorithms, packages, etc. 
+
+Results: Description of experiments, comparisons, and results (tables, plots, etc). 
+
+Conclusions and Future Work: 
+
+References: 
+
+
+ 
