@@ -325,8 +325,18 @@ data_clean(:,end+1) = data{:,51};
 %% 48 - Liver HU (Median)
 data_clean(:,end+1) = data{:,52};
 
-% Clean up variables
-clear idx
+
+
+%% Remove all participants that have NaN in their CT data
+CT = data_clean(:,38:48);
+numNaN = sum(isnan(CT),2);
+idx_NaN = numNaN>0;
+data_clean(idx_NaN,:) = [];
+
+ID_clean = ID(~idx_NaN,:);
+
+%% Clean up variables
+clear idx numNaN
 
 %% Seperate array into types
 % Clinical Data
