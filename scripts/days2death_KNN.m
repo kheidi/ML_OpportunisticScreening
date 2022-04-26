@@ -16,25 +16,98 @@ ageCT_D = data_clean(idx_D,5);
 days_from_CT = data_clean(idx_D, 13);
 ageDeath = ageCT_D + (days_from_CT/365);
 
-X = CT(idx_D,:);
-y = ageDeath;
+y = round(ageDeath);
+kFolds = 10;
+KNNfolds = 5;
 
+%% Optimized
+X = CT(idx_D,:);
+
+% X(:,13) = CD(idx_D,7);
+
+c = cvpartition(length(y),'KFold',kFolds);
+
+% Normalize X
+[X, maxes, mins] = normalizeMatByCols(X);
+X(:,12) = CD(idx_D,4);
+X(:,13) = CD(idx_D,4) + (data_clean(idx_D,1)/365);
+
+figure;
+for i = 1:kFolds
+
+    idx = training(c,i); %indexes of current fold's training set
+    tid = test(c,i); 
+
+    trainX = X(idx,:);
+    trainy = y(idx,:);
+    testX = X(tid,:);
+    testy = y(tid,:);
+
+%     [trainX, maxes, mins] = normalizeMatByCols(trainX);
+%     for ii = 1:length(testX)
+%         testX(i,:) = normalizeFromTrain(testX(i,:), maxes, mins);
+%     end
+
+    N = ceil(sqrt(length(y)));
+    matlab_nearestNeighbor = fitcknn(trainX,trainy,'NumNeighbors', KNNfolds, 'Distance','euclidean','DistanceWeight','inverse');
+    y_est = predict(matlab_nearestNeighbor,testX);
+
+    subplot(2,kFolds/2,i)
+    plot(testy,y_est,'o')
+    hold on
+    plot(20:105,20:105)
+    xlabel('True')
+    ylabel('Prediction')
+
+
+    accuracy(i) = norm(abs(testy-y_est));
+    meandiff(i) = mean(abs(testy-y_est));
+    diff{:,i} = testy-y_est;
+
+end
+sgtitle(["Error: ",mean(accuracy)])
+set(gcf,'Position',[100 100 1000 600])
+fprintf("Error = %f\n", mean(accuracy))
+filename = strcat(pwd,'/figures/death/A_KNN_Final','.png');
+saveas(gcf,filename);
+
+%% Full Train
+
+X_alive = CT(~idx_D,:);
+[X_alive, maxes, mins] = normalizeMatByCols(X_alive);
+X_alive(:,12) = CD(~idx_D,4);
+X_alive(:,13) = CD(~idx_D,4) + (data_clean(~idx_D,1)/365);
+
+matlab_nearestNeighbor_total = fitcknn(X,y,'NumNeighbors', KNNfolds, 'Distance','euclidean','DistanceWeight','inverse');
+final_predicted = predict(matlab_nearestNeighbor_total,X_alive);
+
+figure;
+plot(CD(~idx_D,4),final_predicted,'o')
+hold on
+plot(20:105,20:105)
+xlabel('Age at CT (years)')
+ylabel('Predicted Age at Death (years)')
+filename = strcat(pwd,'/figures/death/A_KNN_Final_Applied','.png');
+saveas(gcf,filename);
+
+%% Add CO Data
+X_Op_Width = width(X);
 for clinical = 1:width(CD)
 
-    %% Add Clinical Data
-%     X(:,end) = CD(idx_D,4); % Age at CT
-    X(:,12) = CD(idx_D,clinical); 
+    % Add CO Data
+    X(:,X_Op_Width+1) = CO(idx_D,clinical); 
 
-    %% Initial MATLAB Check
-    k = 5;
-    c = cvpartition(length(y),'KFold',k);
+   
+    c = cvpartition(length(y),'KFold',kFolds);
 
 
     % Normalize X
     [X, maxes, mins] = normalizeMatByCols(X);
+    X(:,12) = CD(idx_D,4);
+    X(:,13) = CD(idx_D,4) + (data_clean(idx_D,1)/365);
 
     figure;
-    for i = 1:k
+    for i = 1:kFolds
 
         idx = training(c,i); %indexes of current fold's training set
         tid = test(c,i); 
@@ -50,10 +123,64 @@ for clinical = 1:width(CD)
     %     end
 
         N = ceil(sqrt(length(y)));
-        matlab_nearestNeighbor = fitcknn(trainX,trainy,'NumNeighbors', 2, 'Distance','cityblock');
+        matlab_nearestNeighbor = fitcknn(trainX,trainy,'NumNeighbors', KNNfolds, 'Distance','euclidean','DistanceWeight','inverse');
         y_est = predict(matlab_nearestNeighbor,testX);
 
-        subplot(1,5,i)
+        subplot(2,kFolds/2,i)
+        plot(testy,y_est,'o')
+        hold on
+        plot(20:105,20:105)
+        xlabel('True')
+        ylabel('Prediction')
+        
+
+        accuracy(i) = norm(abs(testy-y_est));
+        meandiff(i) = mean(abs(testy-y_est));
+        diff{:,i} = testy-y_est;
+
+    end
+    sgtitle(['Added: ',CO_desc(clinical), "Error: ",mean(accuracy)])
+    set(gcf,'Position',[100 100 1000 600])
+    fprintf("Added: %s, error = %f\n", CO_desc(clinical), mean(accuracy))
+    filename = strcat(pwd,'/figures/death/KNN_',CO_desc(clinical),'.png');
+    saveas(gcf,filename);
+end
+
+%% Add clinical data
+for clinical = 1:width(CD)
+
+    % Add Clinical Data
+    X(:,X_Op_Width+1) = CD(idx_D,clinical); 
+
+    c = cvpartition(length(y),'KFold',kFolds);
+
+
+    % Normalize X
+    [X, maxes, mins] = normalizeMatByCols(X);
+    X(:,12) = CD(idx_D,4);
+    X(:,13) = CD(idx_D,4) + (data_clean(idx_D,1)/365);
+
+    figure;
+    for i = 1:kFolds
+
+        idx = training(c,i); %indexes of current fold's training set
+        tid = test(c,i); 
+
+        trainX = X(idx,:);
+        trainy = y(idx,:);
+        testX = X(tid,:);
+        testy = y(tid,:);
+
+    %     [trainX, maxes, mins] = normalizeMatByCols(trainX);
+    %     for ii = 1:length(testX)
+    %         testX(i,:) = normalizeFromTrain(testX(i,:), maxes, mins);
+    %     end
+
+        N = ceil(sqrt(length(y)));
+        matlab_nearestNeighbor = fitcknn(trainX,trainy,'NumNeighbors', KNNfolds, 'Distance','euclidean','DistanceWeight','inverse');
+        y_est = predict(matlab_nearestNeighbor,testX);
+
+        subplot(2,kFolds/2,i)
         plot(testy,y_est,'o')
         hold on
         plot(20:105,20:105)
@@ -67,7 +194,7 @@ for clinical = 1:width(CD)
 
     end
     sgtitle(['Added: ',CD_desc(clinical), "Error: ",mean(accuracy)])
-    set(gcf,'Position',[100 100 1000 300])
+    set(gcf,'Position',[100 100 1000 600])
     fprintf("Added: %s, error = %f\n", CD_desc(clinical), mean(accuracy))
     filename = strcat(pwd,'/figures/death/KNN_',CD_desc(clinical),'.png');
     saveas(gcf,filename);
