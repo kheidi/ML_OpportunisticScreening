@@ -9,6 +9,7 @@ indx_dead = CO(:,1)==1;
 TrainAge = (floor(CO(indx_dead,2)/365)) + CD(indx_dead,5); 
 TrainCT = CT(indx_dead,:);
 
+
 indx_alive = CO(:,1)==0;
 TestCT = CT(indx_alive,:);
 
@@ -25,9 +26,28 @@ for i = 1:width(TrainCT)
 end
 
 
+%% MLR with CT Data
 predictors=[ones(size(TrainCT)) TrainCT];
 %This will create a regression model of type:
 % Pre=b0+(b1*TrainCT(:,1))+(b2*TrainCT(:,2))+(b3*TrainCT(:,3))+...+(b11*TrainCT(:,11))
 % it also gives stats and residuals   
 [b,bint,r,rint,MLR_stats] = regress(TrainAge,predictors);
+
+
+%% Adding Clinical Data
+
+indx_dead = CO(:,1)==1;
+TrainCD = CD(indx_dead,:);
+
+for j = 1:width(TrainCD)
+NewTrainData= [TrainCT TrainCD(:,j)];
+predictors=[ones(size(NewTrainData)) NewTrainData];
+[bCD{j},bintCD{j},rCD{j},rintCD{j},MLR_statsCD{j}] = regress(TrainAge,predictors);
+end
+
+
+
+
+
+
 
