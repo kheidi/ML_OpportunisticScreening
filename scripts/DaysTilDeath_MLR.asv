@@ -46,27 +46,7 @@ PredictedAges_fit = predict(fit_mdl,TestCT);
 sw_mdl = stepwiselm(TrainCT,TrainAge);
 PredictedAges_sw = predict(sw_mdl,TestCT);
 
-
-
-
-
-
-% %% Test and Train data: 
-% 
-% % Cross varidation (train: 70%, test: 30%)
-% cv = cvpartition(size(CTData,1),'HoldOut',0.3);
-% idx = cv.test;
-% % Separate to training and test data
-% TrainCT = data(~idx,:);
-% TestCT  = data(idx,:);
-
-
-
-
-
-
-
-%scatter(ActualAge, PredictedAges);
+scatter(ActualAge, PredictedAges);
 
 
 % %% Adding Clinical Data
