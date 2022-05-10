@@ -10,7 +10,7 @@ load('dataCleaned.mat');
 Age = CD(:,5);
 CTData = [CT Age];
 
-%% Kmeans vs PAC
+%% Kmeans
 
 for i = 1:15
     [idex{i}, C{i}] = kmeans(CTData,i);
