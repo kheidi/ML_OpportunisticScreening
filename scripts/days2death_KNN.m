@@ -87,12 +87,6 @@ X_alive(:,13) = CD(~idx_D,4) + (data_clean(~idx_D,1)/365);
 matlab_nearestNeighbor_total = fitcknn(X,y,'NumNeighbors', KNNfolds, 'Distance','euclidean','DistanceWeight','inverse');
 final_predicted = predict(matlab_nearestNeighbor_total,X_alive);
 
-for n = 1:length(y)
-    sumRMSE = (y(n)-final_predicted(n))^2;
-end
-    
-    RMSE_AllData = (sumRMSE/length(y))^(1/2);
-
 figure;
 plot(CD(~idx_D,4),final_predicted,'.')
 hold on
