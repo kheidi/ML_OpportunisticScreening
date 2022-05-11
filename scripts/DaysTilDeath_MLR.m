@@ -1,6 +1,7 @@
 %% Age they will die
 
 %% Load Data
+cleanData();
 clear;close all;clc;
 load('dataCleaned.mat');
 
