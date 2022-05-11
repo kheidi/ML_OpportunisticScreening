@@ -145,11 +145,12 @@ for clinical = 1:width(CD)
         xlabel('True')
         ylabel('Prediction')
         
-        for n = 1:length(testy)
-            sumRMSE = (testy(n)-y_est(n))^2;
-        end
-            
+        sumRMSE = sum((testy-y_est).^2);
+    
         RMSE_CO(i) = (sumRMSE/length(testy))^(1/2);
+        sumRMSE = 0;
+        title("RMSE: ",RMSE_CO(i))
+
 
         accuracy(i) = norm(abs(testy-y_est));
         meandiff(i) = mean(abs(testy-y_est));
@@ -204,11 +205,11 @@ for clinical = 1:width(CD)
         xlabel('True')
         ylabel('Prediction')
 
-        for n = 1:length(testy)
-            sumRMSE = (testy(n)-y_est(n))^2;
-        end
-            
+        sumRMSE = sum((testy-y_est).^2);
+    
         RMSE_CD(i) = (sumRMSE/length(testy))^(1/2);
+        sumRMSE = 0;
+        title("RMSE: ",RMSE_CD(i))
 
         accuracy(i) = norm(abs(testy-y_est));
         meandiff(i) = mean(abs(testy-y_est));
