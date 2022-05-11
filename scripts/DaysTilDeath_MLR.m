@@ -6,7 +6,10 @@
 %% Load Data
 cleanData();
 clear;close all;clc;
-load('dataCleaned.mat');
+% load('dataCleaned.mat');
+% data = data_clean;
+load('dataBalancedAndCleaned.mat');
+data = data_balanced;
 
 %% Training/Test Data
 % Dividing data. Test data is the patients that are dead and Train data is
@@ -14,7 +17,7 @@ load('dataCleaned.mat');
 
 % Train Data
 indx_dead = CO(:,1)==1;
-TrainAge = (floor(data_clean(indx_dead ,13)/365)) + CD(indx_dead,4); 
+TrainAge = (floor(data(indx_dead ,13)/365)) + CD(indx_dead,4); 
 TrainCT = CT(indx_dead,:);
 % Test Data
 indx_alive = CO(:,1)==0;
@@ -33,8 +36,9 @@ c = cvpartition(length(y),'KFold',kFolds);
 % Normalize X
 [X, maxes, mins] = normalizeMatByCols(X);
 X(:,12) = CD(indx_dead,4);
-X(:,13) = CD(indx_dead,4) + (data_clean(indx_dead,1)/365);
+X(:,13) = CD(indx_dead,4) + (data(indx_dead,1)/365);
 
+sumRMSE=0;
 figure;
 
 for i = 1:kFolds
@@ -58,10 +62,11 @@ for i = 1:kFolds
     ylabel('Prediction')
 
     for n = 1:length(testy)
-        sumRMSE = (testy(n)-PredictedAges_fit(n))^2;
+        sumRMSE = sumRMSE + (testy(n)-PredictedAges_fit(n))^2;
     end
     
     RMSE(i) = (sumRMSE/length(testy))^(1/2);
+    title("RMSE: ",RMSE(i))
     accuracy(i) = norm(abs(testy-PredictedAges_fit));
     meandiff(i) = mean(abs(testy-PredictedAges_fit));
     diff{:,i} = testy-PredictedAges_fit;
@@ -79,21 +84,16 @@ fprintf("Error = %f\n", mean(accuracy))
 X_alive = TestCT;
 [X_alive, maxes, mins] = normalizeMatByCols(X_alive);
 X_alive(:,12) = TestAge;
-X_alive(:,13) = CD(indx_alive,4) + (data_clean(indx_alive ,1)/365);
+X_alive(:,13) = CD(indx_alive,4) + (data(indx_alive ,1)/365);
 
 mdl = fitlm(X,y);
 PredictedAges = predict(mdl,X_alive);
-
-    for n = 1:length(y)
-        sumRMSE = (y(n)-PredictedAges(n))^2;
-    end
-    
-    RMSE_AllData = (sumRMSE/length(y))^(1/2);
 
 figure;
 plot(CD(indx_alive,4),PredictedAges,'o')
 hold on
 plot(20:105,20:105)
+title("RMSE: ",RMSE_AllData)
 xlabel('Age at CT (years)')
 ylabel('Predicted Age at Death (years)')
 
@@ -111,8 +111,9 @@ for clinical = 2:width(CD) % Started at 2 to not use the TF if they are dead or 
     % Normalize X
     [X, maxes, mins] = normalizeMatByCols(X);
     X(:,12) = CD(indx_dead,4);
-    X(:,13) = CD(indx_dead,4) + (data_clean(indx_dead,1)/365);
+    X(:,13) = CD(indx_dead,4) + (data(indx_dead,1)/365);
 
+    sumRMSE = 0;
     figure;
     for i = 1:kFolds
 
@@ -135,10 +136,12 @@ for clinical = 2:width(CD) % Started at 2 to not use the TF if they are dead or 
         ylabel('Prediction')
         
         for n = 1:length(testy)
-            sumRMSE = (testy(n)-PredictedAges_CO(n))^2;
+            sumRMSE = sumRMSE + (testy(n)-PredictedAges_CO(n))^2;
         end
             
         RMSE_CO(i) = (sumRMSE/length(testy))^(1/2);
+        title("RMSE: ",RMSE_CO(i))
+
         accuracy(i) = norm(abs(testy-PredictedAges_CO));
         meandiff(i) = mean(abs(testy-PredictedAges_CO));
         diff{:,i} = testy-PredictedAges_CO;
@@ -163,8 +166,9 @@ for clinical = 1:(width(CD)-1) % -1 because I don't want to use the clumn of dea
     % Normalize X
     [X, maxes, mins] = normalizeMatByCols(X);
     X(:,12) = CD(indx_dead,4);
-    X(:,13) = CD(indx_dead,4) + (data_clean(indx_dead,1)/365);
+    X(:,13) = CD(indx_dead,4) + (data(indx_dead,1)/365);
 
+    sumRMSE = 0;
     figure;
     for i = 1:kFolds
 
@@ -187,10 +191,11 @@ for clinical = 1:(width(CD)-1) % -1 because I don't want to use the clumn of dea
         ylabel('Prediction')
 
         for n = 1:length(testy)
-            sumRMSE = (testy(n)-PredictedAges_CD (n))^2;
+            sumRMSE = sumRMSE + (testy(n)-PredictedAges_CD (n))^2;
         end
             
         RMSE_CD(i) = (sumRMSE/length(testy))^(1/2);
+        title("RMSE: ",RMSE_CD(i))
         accuracy(i) = norm(abs(testy-PredictedAges_CD));
         meandiff(i) = mean(abs(testy-PredictedAges_CD));
         diff{:,i} = testy-PredictedAges_CD ;
