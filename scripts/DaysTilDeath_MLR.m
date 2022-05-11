@@ -6,103 +6,86 @@ load('dataCleaned.mat');
 
 %% Gathering the patients that have died - Training Data
 indx_dead = CO(:,1)==1;
-TrainAge = (floor(CO(indx_dead,2)/365)) + CD(indx_dead,5); 
+
+TrainAge = (floor(data_clean(indx_dead ,13)/365)) + CD(indx_dead,4); 
 TrainCT = CT(indx_dead,:);
 
 indx_alive = CO(:,1)==0;
-TestAge = CD(indx_alive,5);
-TestCT = CT(indx_alive,:);;
-
-%TrainAge = normalizeColumn((floor(CO(indx_dead,2)/365)) + CD(indx_dead,5)); 
-%TrainCT = normalizeMatByCols(CT(indx_dead,:));
+TestAge = CD(indx_alive,4);
+TestCT = CT(indx_alive,:);
 
 
-% % Linear Fit: How does our data behaves
-% for i = 1:width(TrainCT)
-%     figure;
-%     Stats{i} = fitlm(TrainAge, TrainCT(:,i));
-%     plot(Stats{i})
-%     title("Age vs. "+CT_desc(i))
-%     ylabel(CT_desc(i))
-%     xlabel("Age")
-% 
-%     Rsquared = Stats{i}.Rsquared;
-% end
+%% K-fold validation fit linear regression
 
+y = TrainAge;
+kFolds = 10;
+X = TrainCT;
+c = cvpartition(length(y),'KFold',kFolds);
 
-%% MLR with CT Data
+% Normalize X
+[X, maxes, mins] = normalizeMatByCols(X);
+X(:,12) = CD(indx_dead,4);
+X(:,13) = CD(indx_dead,4) + (data_clean(indx_dead,1)/365);
 
-% predictors=[ones(size(TrainCT)) TrainCT];
-% %This will create a regression model of type:
-% % Pre=b0+(b1*TrainCT(:,1))+(b2*TrainCT(:,2))+(b3*TrainCT(:,3))+...+(b11*TrainCT(:,11))
-% % it also gives stats and residuals   
-% [b,bint,r,rint,MLR_stats] = regress(TrainAge,predictors);
+figure;
 
-%fit Linear regression model
-fit_mdl = fitlm(TrainCT,TrainAge);
-PredictedAges_fit = predict(fit_mdl,TestCT);
+for i = 1:kFolds
 
-%stepwise linear regression model
-sw_mdl = stepwiselm(TrainCT,TrainAge);
-PredictedAges_sw = predict(sw_mdl,TestCT);
+    idx = training(c,i); %indexes of current fold's training set
+    tid = test(c,i); 
 
+    trainX = X(idx,:);
+    trainy = y(idx,:);
+    testX = X(tid,:);
+    testy = y(tid,:);
 
+    fit_mdl = fitlm(trainX,trainy);
+    PredictedAges_fit = predict(fit_mdl,testX);
 
+    subplot(2,kFolds/2,i)
+    plot(testy,PredictedAges_fit,'o')
+    hold on
+    plot(20:105,20:105)
+    xlabel('Actual Age')
+    ylabel('Prediction')
 
+    for n = 1:length(testy)
+        sumRMSE = (testy(n)-PredictedAges_fit(n))^2;
+    end
+    
+    RMSE(i) = (sumRMSE/length(testy))^(1/2);
+    accuracy(i) = norm(abs(testy-PredictedAges_fit));
+    meandiff(i) = mean(abs(testy-PredictedAges_fit));
+    diff{:,i} = testy-PredictedAges_fit;
+  
 
+end
+sgtitle(["Error: ",mean(accuracy)])
+set(gcf,'Position',[100 100 1000 600])
+fprintf("Error = %f\n", mean(accuracy))
 
-% %% Test and Train data: 
-% 
-% % Cross varidation (train: 70%, test: 30%)
-% cv = cvpartition(size(CTData,1),'HoldOut',0.3);
-% idx = cv.test;
-% % Separate to training and test data
-% TrainCT = data(~idx,:);
-% TestCT  = data(idx,:);
+%% MLR all data
 
+X_alive = TestCT;
+[X_alive, maxes, mins] = normalizeMatByCols(X_alive);
+X_alive(:,12) = TestAge;
+X_alive(:,13) = CD(indx_alive,4) + (data_clean(indx_alive ,1)/365);
 
+mdl = fitlm(X,y);
+PredictedAges = predict(mdl,X_alive);
 
+    for n = 1:length(y)
+        sumRMSE = (y(n)-PredictedAges(n))^2;
+    end
+    
+    RMSE_AllData = (sumRMSE/length(y))^(1/2);
 
-
-
-
-%scatter(ActualAge, PredictedAges);
-
-
-% %% Adding Clinical Data
-% 
-% indx_dead = CO(:,1)==1;
-% TrainCD = normalizeMatByCols(CD(indx_dead,:));
-% indx_alive = CO(:,1)==0;
-% TestCD = normalizeMatByCols(CD(indx_alive,:));
-% 
-% for j = 1:width(TrainCD)
-% NewTrainDataCD = [TrainCT TrainCD(:,j)];
-% NewTestDataCD = [TestCT TestCD(:,j)];
-% 
-% mdlCD = fitlm(NewTrainDataCD,TrainAge);
-% PredictedAgesCD = predict(mdlCD,NewTestDataCD);
-% 
-% % predictors=[ones(size(NewTrainData)) NewTrainData];
-% % [bCD{j},bintCD{j},rCD{j},rintCD{j},MLR_statsCD{j}] = regress(TrainAge,predictors);
-% end
-% 
-% %% Adding CO
-% indx_dead = CO(:,1)==1;
-% TrainCO = normalizeMatByCols(CO(indx_dead,:));
-% indx_alive = CO(:,1)==0;
-% TestCO = normalizeMatByCols(CD(indx_alive,:));
-% 
-% for j = 2:width(TrainCO)
-% NewTrainDataCO= [TrainCT TrainCO(:,j)];
-% NewTestDataCO = [TestCT TestCO(:,j)];
-% 
-% mdlCO = fitlm(NewTrainDataCO,TrainAge);
-% PredictedAgesCO = predict(mdlCO,NewTestDataCO);
-% 
-% % predictors=[ones(size(NewTrainDataCO)) NewTrainDataCO];
-% % [bCO{j},bintCO{j},rCO{j},rintCO{j},MLR_statsCO{j}] = regress(TrainAge,predictors);
-%end 
+figure;
+plot(CD(indx_alive,4),PredictedAges,'o')
+hold on
+plot(20:105,20:105)
+xlabel('Age at CT (years)')
+ylabel('Predicted Age at Death (years)')
 
 
 
