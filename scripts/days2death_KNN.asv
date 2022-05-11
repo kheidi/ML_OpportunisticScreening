@@ -86,14 +86,10 @@ X_alive(:,13) = CD(~idx_D,4) + (data_clean(~idx_D,1)/365);
 matlab_nearestNeighbor_total = fitcknn(X,y,'NumNeighbors', KNNfolds, 'Distance','euclidean','DistanceWeight','inverse');
 final_predicted = predict(matlab_nearestNeighbor_total,X_alive);
 
-for n = 1:length(y)
-    sumRMSE = (y(n)-final_predicted(n))^2;
-end
-    
-    RMSE_AllData = (sumRMSE/length(y))^(1/2);
+
 
 figure;
-plot(CD(~idx_D,4),final_predicted,'.')
+plot(CD(~idx_D,4),final_predicted,'o')
 hold on
 plot(20:105,20:105)
 xlabel('Age at CT (years)')
@@ -144,11 +140,6 @@ for clinical = 1:width(CD)
         xlabel('True')
         ylabel('Prediction')
         
-        for n = 1:length(testy)
-            sumRMSE = (testy(n)-y_est(n))^2;
-        end
-            
-        RMSE_CO(i) = (sumRMSE/length(testy))^(1/2);
 
         accuracy(i) = norm(abs(testy-y_est));
         meandiff(i) = mean(abs(testy-y_est));
@@ -202,12 +193,7 @@ for clinical = 1:width(CD)
         plot(20:105,20:105)
         xlabel('True')
         ylabel('Prediction')
-
-        for n = 1:length(testy)
-            sumRMSE = (testy(n)-y_est(n))^2;
-        end
-            
-        RMSE_CD(i) = (sumRMSE/length(testy))^(1/2);
+        
 
         accuracy(i) = norm(abs(testy-y_est));
         meandiff(i) = mean(abs(testy-y_est));
