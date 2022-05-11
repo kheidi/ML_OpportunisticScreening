@@ -17,9 +17,7 @@ TestAge = CD(indx_alive,4);
 TestCT = CT(indx_alive,:);
 
 %% K-fold validation fit linear regression
-% K-fold validation using only patients that are dead to see how accurate
-% our model is. 
-
+% K-fold validation using only patients that
 y = TrainAge;
 kFolds = 10;
 X = TrainCT;
@@ -68,8 +66,6 @@ set(gcf,'Position',[100 100 1000 600])
 fprintf("Error = %f\n", mean(accuracy))
 
 %% MLR all data
-% Running our model in all the data. Trained with the patients that are
-% dead and tested on the ones alive. 
 
 X_alive = TestCT;
 [X_alive, maxes, mins] = normalizeMatByCols(X_alive);
@@ -93,15 +89,15 @@ xlabel('Age at CT (years)')
 ylabel('Predicted Age at Death (years)')
 
 %% Add CO Data
-% Here we added one Clinical outcome at a time to see how it affects the
-% accuracy of our model. 
-
 X_Op_Width = width(X);
 for clinical = 2:width(CD) % Started at 2 to not use the TF if they are dead or alive
 
     % Add CO Data
     X(:,X_Op_Width+1) = CO(indx_dead,clinical); 
+
+   
     c = cvpartition(length(y),'KFold',kFolds);
+
 
     % Normalize X
     [X, maxes, mins] = normalizeMatByCols(X);
@@ -119,8 +115,8 @@ for clinical = 2:width(CD) % Started at 2 to not use the TF if they are dead or 
         testX = X(tid,:);
         testy = y(tid,:);
 
-        CO_mdl = fitlm(trainX,trainy);
-        PredictedAges_CO = predict(CO_mdl,testX);
+         CO_mdl = fitlm(trainX,trainy);
+         PredictedAges_CO = predict(CO_mdl,testX);
 
         subplot(2,kFolds/2,i)
         plot(testy,PredictedAges_CO,'o')
@@ -134,6 +130,7 @@ for clinical = 2:width(CD) % Started at 2 to not use the TF if they are dead or 
         end
             
         RMSE_CO(i) = (sumRMSE/length(testy))^(1/2);
+
         accuracy(i) = norm(abs(testy-PredictedAges_CO));
         meandiff(i) = mean(abs(testy-PredictedAges_CO));
         diff{:,i} = testy-PredictedAges_CO;
@@ -146,14 +143,13 @@ for clinical = 2:width(CD) % Started at 2 to not use the TF if they are dead or 
 end
 
 %% Add clinical data
-% Here we added one Clinical data at a time to see how it affects the
-% accuracy of our model. 
-
 for clinical = 1:(width(CD)-1)
 
     % Add Clinical Data
     X(:,X_Op_Width+1) = CD(indx_dead,clinical); 
+
     c = cvpartition(length(y),'KFold',kFolds);
+
 
     % Normalize X
     [X, maxes, mins] = normalizeMatByCols(X);
@@ -186,6 +182,7 @@ for clinical = 1:(width(CD)-1)
         end
             
         RMSE_CD(i) = (sumRMSE/length(testy))^(1/2);
+
         accuracy(i) = norm(abs(testy-PredictedAges_CD));
         meandiff(i) = mean(abs(testy-PredictedAges_CD));
         diff{:,i} = testy-PredictedAges_CD ;
