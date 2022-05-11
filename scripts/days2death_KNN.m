@@ -59,18 +59,19 @@ for i = 1:kFolds
     xlabel('True')
     ylabel('Prediction')
 
-    for n = 1:length(testy)
-        sumRMSE = (testy(n)-y_est(n))^2;
-    end
+    sumRMSE = sum((testy-y_est).^2);
     
     RMSE(i) = (sumRMSE/length(testy))^(1/2);
+    sumRMSE = 0;
+    
+    title("RMSE: ",RMSE(i))
 
     accuracy(i) = norm(abs(testy-y_est));
     meandiff(i) = mean(abs(testy-y_est));
     diff{:,i} = testy-y_est;
 
 end
-sgtitle(["Error: ",mean(accuracy)])
+sgtitle(["Mean RMSE: ",mean(RMSE)])
 set(gcf,'Position',[100 100 1000 600])
 fprintf("Error = %f\n", mean(accuracy))
 filename = strcat(pwd,'/figures/death/A_KNN_Final','.png');
