@@ -1,17 +1,22 @@
 %% Age they will die:
-% 
+% This script uses Multi Linear Regression to calculate the age a person
+% will die based on their CT scan data. It also compares how adding clinical
+% outcome and clinical data affects the acuracy of the MLR model.
 
 %% Load Data
 cleanData();
 clear;close all;clc;
 load('dataCleaned.mat');
 
-%% Dividing Training/Test Data
-% Gathering patients that died - Train Data
+%% Training/Test Data
+% Dividing data. Test data is the patients that are dead and Train data is
+% the patinets that are alive.
+
+% Train Data
 indx_dead = CO(:,1)==1;
 TrainAge = (floor(data_clean(indx_dead ,13)/365)) + CD(indx_dead,4); 
 TrainCT = CT(indx_dead,:);
-%Gathering patinets that are alive - Test Data
+% Test Data
 indx_alive = CO(:,1)==0;
 TestAge = CD(indx_alive,4);
 TestCT = CT(indx_alive,:);
@@ -149,7 +154,7 @@ end
 % Here we added one Clinical data at a time to see how it affects the
 % accuracy of our model. 
 
-for clinical = 1:(width(CD)-1)
+for clinical = 1:(width(CD)-1) % -1 because I don't want to use the clumn of dead or alive. 
 
     % Add Clinical Data
     X(:,X_Op_Width+1) = CD(indx_dead,clinical); 
