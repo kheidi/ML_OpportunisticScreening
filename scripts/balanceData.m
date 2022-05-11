@@ -1,6 +1,7 @@
 %% Load Data
 clear;
 close all;
+cleanData();
 load('dataCleaned.mat');
 
 %% Average in buckets by sex
