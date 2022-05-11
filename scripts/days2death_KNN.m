@@ -82,7 +82,7 @@ matlab_nearestNeighbor_total = fitcknn(X,y,'NumNeighbors', KNNfolds, 'Distance',
 final_predicted = predict(matlab_nearestNeighbor_total,X_alive);
 
 figure;
-plot(CD(~idx_D,4),final_predicted,'o')
+plot(CD(~idx_D,4),final_predicted,'.')
 hold on
 plot(20:105,20:105)
 xlabel('Age at CT (years)')

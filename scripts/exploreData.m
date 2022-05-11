@@ -32,3 +32,9 @@ disp("NaN Age at CT:")
 disp(sum(isnan(ageAtCT)))
 disp("NaN Age at death:")
 disp(sum(isnan(ageAtDeath)))
+
+%% Linear Regression by Age
+
+boneMeasure = fitlm(ageAtCT,CT(:,1))
+figure
+plot(boneMeasure)

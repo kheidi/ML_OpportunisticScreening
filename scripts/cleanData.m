@@ -91,6 +91,7 @@ descriptions = [
     "AoCa Agaston";
     "Liver HU (Median)"];
 
+
 %% 1 - Clinical F/U interval 
 % Not quite sure how to handle dates?
 data_clean(:,1) = data{:,4};
@@ -350,6 +351,10 @@ CO_desc = descriptions(cols);
 % Computerized Tomography Data
 CT = data_clean(:,38:48);
 CT_desc = descriptions(38:48);
+
+%% Index by Sex
+idx_male = CD(:,3)==0;
+idx_female = CD(:,3)==1;
 
 %% Clean up variables
 clear idx numNaN cols

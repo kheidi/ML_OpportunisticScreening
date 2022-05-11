@@ -1,27 +1,27 @@
-%% Relationship Between CT and Age
+ %% Relationship Between CT and Age
 
-%% Load Data
+% Load Data
 clear;
 close all;
 load('dataCleaned.mat');
 
-%% Linear Fit - Age vs. CT Data
-% for i = 1:width(CT)
-%     all_linearfits{i} = fitlm(data_clean(:,5),CT(:,i));
-%     figure;
-%     plot(all_linearfits{i})
-%     title("Age vs. "+CT_desc(i))
-%     ylabel(CT_desc(i))
-%     xlabel("Age")
-%     disp(all_linearfits{i}.Coefficients)
-% end
+% Linear Fit - Age vs. CT Data
+for i = 1:width(CT)
+    all_linearfits{i} = fitlm(data_clean(:,5),CT(:,i));
+    figure;
+    plot(all_linearfits{i})
+    title("Age vs. "+CT_desc(i))
+    ylabel(CT_desc(i))
+    xlabel("Age")
+    disp(all_linearfits{i}.Coefficients)
+end
 
-%% Average in buckets by sex
-% for i = 1: height(CT)
-%     if CT(i,10)==0
-%         CT(i,10) = nan;
-%     end
-% end
+% Average in buckets by sex
+for i = 1: height(CT)
+    if CT(i,10)==0
+        CT(i,10) = nan;
+    end
+end
 idx_male = CD(:,3)==0;
 idx_female = CD(:,3)==1;
 age_buckets = [
