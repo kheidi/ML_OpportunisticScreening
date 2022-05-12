@@ -70,7 +70,7 @@ CO_desc = descriptions(cols);
 
 % Computerized Tomography Data
 CT = data_balanced(:,38:48);
-C_desc = descriptions(38:48);
+CT_desc = descriptions(38:48);
 
 ID = data(:,1:3);
 
