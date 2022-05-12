@@ -17,7 +17,7 @@ days_from_CT = data_clean(idx_D, 13);
 ageDeath = ageCT_D + (days_from_CT/365);
 
 y = round(ageDeath);
-kFolds = 10;
+kFolds = 6;
 KNNfolds = 5;
 
 %% Optimized
@@ -73,7 +73,7 @@ for i = 1:kFolds
 end
 sgtitle(["Mean RMSE: ",mean(RMSE)])
 set(gcf,'Position',[100 100 1000 600])
-fprintf("Error = %f\n", mean(accuracy))
+fprintf("RMSE = %f\n", mean(RMSE))
 filename = strcat(pwd,'/figures/death/A_KNN_Final','.png');
 saveas(gcf,filename);
 
@@ -151,9 +151,9 @@ for clinical = 1:width(CD)
         diff{:,i} = testy-y_est;
 
     end
-    sgtitle(['Added: ',CO_desc(clinical), "Error: ",mean(accuracy)])
+    sgtitle(['Added: ',CO_desc(clinical), "Error: ",mean(RMSE_CO)])
     set(gcf,'Position',[100 100 1000 600])
-    fprintf("Added: %s, error = %f\n", CO_desc(clinical), mean(accuracy))
+    fprintf("Added: %s, RMSE = %f\n", CO_desc(clinical), mean(RMSE_CO))
     filename = strcat(pwd,'/figures/death/KNN_',CO_desc(clinical),'.png');
     saveas(gcf,filename);
 end
@@ -210,9 +210,9 @@ for clinical = 1:width(CD)
         diff{:,i} = testy-y_est;
 
     end
-    sgtitle(['Added: ',CD_desc(clinical), "Error: ",mean(accuracy)])
+    sgtitle(['Added: ',CD_desc(clinical), "Error: ",mean(RMSE_CD)])
     set(gcf,'Position',[100 100 1000 600])
-    fprintf("Added: %s, error = %f\n", CD_desc(clinical), mean(accuracy))
+    fprintf("Added: %s, RMSE = %f\n", CD_desc(clinical), mean(RMSE_CD))
     filename = strcat(pwd,'/figures/death/KNN_',CD_desc(clinical),'.png');
     saveas(gcf,filename);
 end
