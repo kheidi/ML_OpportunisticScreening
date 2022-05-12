@@ -17,7 +17,7 @@ data = data_balanced;
 
 % Train Data
 indx_dead = CO(:,1)==1;
-TrainAge = (floor(data(indx_dead ,13)/365)) + CD(indx_dead,4); 
+TrainAge = (floor(data_clean(indx_dead ,13)/365)) + CD(indx_dead,4); 
 TrainCT = CT(indx_dead,:);
 % Test Data
 indx_alive = CO(:,1)==0;
@@ -35,8 +35,8 @@ c = cvpartition(length(y),'KFold',kFolds);
 
 % Normalize X
 [X, maxes, mins] = normalizeMatByCols(X);
-X(:,12) = CD(indx_dead,4); %Age at CT
-X(:,13) = CD(indx_dead,4) + (data(indx_dead,1)/365); % Age at follow up CT
+%X(:,12) = CD(indx_dead,4); %Age at CT
+%X(:,13) = CD(indx_dead,4) + (data_clean(indx_dead,1)/365); % Age they died
 
 sumRMSE=0;
 figure;
@@ -77,24 +77,19 @@ sgtitle(["Mean RMSE: ",mean(RMSE)])
 set(gcf,'Position',[100 100 1000 600])
 fprintf("Error = %f\n", mean(accuracy))
 
+
 %% MLR all data
 % Running our model in all the data. Trained with the patients that are
 % dead and tested on the ones alive. 
 
 X_alive = TestCT;
 [X_alive, maxes, mins] = normalizeMatByCols(X_alive);
-X_alive(:,12) = TestAge;
-X_alive(:,13) = CD(indx_alive,4) + (data(indx_alive ,1)/365);
+%X_alive(:,12) = TestAge;
+%X_alive(:,13) = CD(indx_alive,4) + (data_clean(indx_alive ,1)/365);
 
 mdl = fitlm(X,y);
 PredictedAges = predict(mdl,X_alive);
 
-figure;
-plot(CD(indx_alive,4),PredictedAges,'o')
-hold on
-plot(20:105,20:105)
-xlabel('Age at CT (years)')
-ylabel('Predicted Age at Death (years)')
 
 %% Add CO Data
 % Here we added one Clinical outcome at a time to see how it affects the
