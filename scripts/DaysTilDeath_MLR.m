@@ -6,10 +6,10 @@
 %% Load Data
 cleanData();
 clear;close all;clc;
-load('dataCleaned.mat');
-data = data_clean;
-% load('dataBalancedAndCleaned.mat');
-% data = data_balanced;
+%load('dataCleaned.mat');
+%data = data_clean;
+load('dataBalancedAndCleaned.mat');
+data = data_balanced;
 
 %% Training/Test Data
 % Dividing data. Test data is the patients that are dead and Train data is
@@ -35,8 +35,8 @@ c = cvpartition(length(y),'KFold',kFolds);
 
 % Normalize X
 [X, maxes, mins] = normalizeMatByCols(X);
-X(:,12) = CD(indx_dead,4);
-X(:,13) = CD(indx_dead,4) + (data(indx_dead,1)/365);
+X(:,12) = CD(indx_dead,4); %Age at CT
+X(:,13) = CD(indx_dead,4) + (data(indx_dead,1)/365); % Age at follow up CT
 
 sumRMSE=0;
 figure;
@@ -73,7 +73,7 @@ for i = 1:kFolds
   
 
 end
-sgtitle(["Error: ",mean(accuracy)])
+sgtitle(["Mean RMSE: ",mean(RMSE)])
 set(gcf,'Position',[100 100 1000 600])
 fprintf("Error = %f\n", mean(accuracy))
 
@@ -146,7 +146,7 @@ for clinical = 2:width(CD) % Started at 2 to not use the TF if they are dead or 
         diff{:,i} = testy-PredictedAges_CO;
 
     end
-    sgtitle(['Added: ',CO_desc(clinical), "Error: ",mean(accuracy)])
+    sgtitle(['Added: ',CO_desc(clinical), "Mean RMSE: ",mean(RMSE_CO)])
     set(gcf,'Position',[100 100 1000 600])
     fprintf("Added: %s, error = %f\n", CO_desc(clinical), mean(accuracy))
    
@@ -200,9 +200,7 @@ for clinical = 1:(width(CD)-1) % -1 because I don't want to use the clumn of dea
         diff{:,i} = testy-PredictedAges_CD ;
 
     end
-    sgtitle(['Added: ',CD_desc(clinical), "Error: ",mean(accuracy)])
+    sgtitle(['Added: ',CD_desc(clinical), "Mean RMSE: ",mean(RMSE_CD)])
     set(gcf,'Position',[100 100 1000 600])
     fprintf("Added: %s, error = %f\n", CD_desc(clinical), mean(accuracy))
 end
-
-

@@ -6,7 +6,7 @@
 % this raw data to the git repo as it is PRIVATE.
 
 function [] = cleanData()
-close all; clear all;
+close all; clear;
 %% Import Data
 data = readtable('OppScrData.csv', 'VariableNamingRule', 'preserve');
 
