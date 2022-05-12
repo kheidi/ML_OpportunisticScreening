@@ -97,7 +97,9 @@ descriptions = [
 data_clean(:,1) = data{:,4};
 
 %% 2 - BMI
+idx_isnan = isnan(data{:,5});
 data_clean(:,end+1) = data{:,5};
+data_clean(idx_isnan,end) = 1000;
 
 %% 3 - BMI>30, not sure if we should just remove this or if this just provides
 % like extra data that emphasizes that the BMI>30 is an important attribute
