@@ -6,10 +6,10 @@
 %% Load Data
 cleanData();
 clear;close all;clc;
-% load('dataCleaned.mat');
-% data = data_clean;
-load('dataBalancedAndCleaned.mat');
-data = data_balanced;
+load('dataCleaned.mat');
+data = data_clean;
+% load('dataBalancedAndCleaned.mat');
+% data = data_balanced;
 
 %% Training/Test Data
 % Dividing data. Test data is the patients that are dead and Train data is
@@ -93,7 +93,6 @@ figure;
 plot(CD(indx_alive,4),PredictedAges,'o')
 hold on
 plot(20:105,20:105)
-title("RMSE: ",RMSE_AllData)
 xlabel('Age at CT (years)')
 ylabel('Predicted Age at Death (years)')
 
