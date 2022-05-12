@@ -7,17 +7,17 @@
 %% Load Data
 clear;
 close all;
-load('dataCleaned.mat');
+load('dataBalancedAndCleaned.mat');
 
 %% Subset of known deaths
-idx_D = ~isnan(data_clean(:,13));
+idx_D = (data_clean(:,12)==1);
 CT_D = CT(idx_D,:);
 ageCT_D = data_clean(idx_D,5); 
 days_from_CT = data_clean(idx_D, 13);
 ageDeath = ageCT_D + (days_from_CT/365);
 
 y = round(ageDeath);
-kFolds = 6;
+kFolds = 10;
 KNNfolds = 5;
 
 %% Optimized
