@@ -9,6 +9,8 @@ clear;
 close all;
 load('dataCleaned.mat');
 
+kFolds = 10;
+
 %% Predict Outcomes
 
 for j = 1:width(CO)
@@ -38,8 +40,8 @@ for j = 1:width(CO)
         testX = X(tid,:);
         testy = y(tid,:);
 
-        matlab_nearestNeighbor = fitcsvm(trainX,trainy);
-        y_est = predict(matlab_nearestNeighbor,testX);
+        matlab_SVM = fitcsvm(trainX,trainy);
+        y_est = predict(matlab_SVM,testX);
         
         count_wrong = sum(abs(testy-y_est));
         count_correct = length(testy)-count_wrong;
@@ -54,8 +56,10 @@ for j = 1:width(CO)
     ylabel('Percent Correct')
     title(["Clinical Outcome: ",CO_desc(j),"Accuracy: ",mean(accuracy)])
 
-    matlab_nearestNeighbor_total = fitcknn(X,y,'NumNeighbors', KNNfolds, 'Distance','euclidean','DistanceWeight','inverse');
-    final_predicted = predict(matlab_nearestNeighbor_total,CT(:,:));
+    matlab_SVM_total = fitcsvm(X,y);
+    CT_All = CT(:,:);
+    [CT_All , maxes, mins] = normalizeMatByCols(CT_All );
+    final_predicted = predict(matlab_SVM_total,CT_All);
     count_wrong = sum(abs(CO(:,j)-final_predicted));
     count_correct = length(CO(:,j))-count_wrong;
     percent_correct = count_correct/(length(CO(:,j)));

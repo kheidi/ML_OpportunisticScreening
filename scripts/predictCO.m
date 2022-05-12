@@ -16,8 +16,7 @@ KNNfolds = 5;
 
 X = CT(:,:);
 [X, maxes, mins] = normalizeMatByCols(X);
-% X(:,12) = CD(idx_D,4);
-% X(:,13) = CD(idx_D,4) + (data_clean(idx_D,1)/365);
+
 
 for j = 1:width(CO)
     % Set clinical outcome that you want to predict
@@ -31,10 +30,7 @@ for j = 1:width(CO)
     y = CO(idx_selected,j);
     X = CT(idx_selected,:);
     [X, maxes, mins] = normalizeMatByCols(X);
-%     
-%     y = [outcomes(idx_pos);outcomes(selected_neg)]
-%     y = CO(:,j);  
-%     
+
     % Generate n-fold validation folds
     c = cvpartition(length(y),'KFold',kFolds);
     
@@ -58,37 +54,16 @@ for j = 1:width(CO)
         accuracy(i) = percent_correct;
         bar(i,percent_correct);
         hold on
-        
-        
-% 
-%         subplot(2,kFolds/2,i)
-% %         plot(testy,y_est,'o')
-% %         plotconfusion(testy.',y_est.')
-%         
-%         
-% 
-%         sumRMSE = sum((testy-y_est).^2);
-% 
-%         RMSE(i) = (sumRMSE/length(testy))^(1/2);
-%         sumRMSE = 0;
-% 
-%         title("RMSE: ",RMSE(i))
-% 
-%         accuracy(i) = norm(abs(testy-y_est));
-%         meandiff(i) = mean(abs(testy-y_est));
-%         diff{:,i} = testy-y_est;
 
     end
     xlabel('Fold #')
     ylabel('Percent Correct')
     title(["Clinical Outcome: ",CO_desc(j),"Accuracy: ",mean(accuracy)])
-%     set(gcf,'Position',[100 100 1000 600])
-%     fprintf("Error = %f\n", mean(RMSE))
-%     filename = strcat(pwd,'/figures/death/A_KNN_Final','.png');
-%     saveas(gcf,filename);
 
     matlab_nearestNeighbor_total = fitcknn(X,y,'NumNeighbors', KNNfolds, 'Distance','euclidean','DistanceWeight','inverse');
-    final_predicted = predict(matlab_nearestNeighbor_total,CT(:,:));
+    CT_All = CT(:,:);
+    [CT_All , maxes, mins] = normalizeMatByCols(CT_All );
+    final_predicted = predict(matlab_nearestNeighbor_total,CT_All);
     count_wrong = sum(abs(CO(:,j)-final_predicted));
     count_correct = length(CO(:,j))-count_wrong;
     percent_correct = count_correct/(length(CO(:,j)));
