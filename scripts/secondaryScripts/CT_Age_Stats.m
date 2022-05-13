@@ -48,6 +48,13 @@ for i = 1:6
    CT_age.female.std(i,:) = std(CT(idx_age_buckets(:,i)&idx_female,:),'omitnan');
 end
 
+%% Correlation All
+CT_Age = [CT(:,:), CD(:,4)];  
+% names = ["BMD";"TATArea";"TotalBodyArea";"VATArea";"SATArea";"VATSATRatio";"MuscleHU";"MuscleArea";"l3SMI";"AoCa";"LiverHU";"Age"];
+% CT_Age = array2table(CT_Age,'VariableNames', names);
+figure
+[R,p_values]=corrplot(CT_Age);
+
 
 %% Polyfit CT by Sex
 CT_male=CT(idx_male,:);
@@ -77,13 +84,8 @@ for i = 1:11
     errorbar([1:6],CT_age.male.mean(:,i),CT_age.male.std(:,i),'-*')
     hold on
     errorbar([1:6],CT_age.female.mean(:,i),CT_age.female.std(:,i),'-*r')
-    title(CT_desc(i))
+    ylabel(CT_desc(i))
+    xlabel('Age (years)')
     xlim([0,7])
     set(gca,'xtick',[1:6],'xticklabel',age_buckets)
 end
-
-%% Polyfit CT by Sex
-CT_male=CT(idx_male,:);
-CT_female=CT(idx_male,:);
-age_male = CD(idx_male,4);
-age_female = CD(idx_female,4);

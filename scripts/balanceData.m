@@ -24,7 +24,14 @@ idx_age_buckets(:,6) = CD(:,4)>80;
 disp("Size of age groups:")
 patient_count = sum(idx_age_buckets)
 
+figure;
+bar(patient_count)
+ylabel('Number of Samples')
+xlabel('Age Group')
+set(gca,'xtick',[1:6],'xticklabel',age_buckets, 'fontSize',18)
+
 disp("Average # of patients in each group:")
+
 target_count = round(mean(sum(idx_age_buckets)))
 
 %% Oversample below mean
@@ -95,5 +102,12 @@ patient_count = sum(idx_age_buckets_balanced)
 
 disp("Average # of patients in each group:")
 target_count = round(mean(sum(idx_age_buckets_balanced)))
+
+figure;
+bar(patient_count)
+ylabel('Number of Samples')
+xlabel('Age Group')
+ylim([0 6000])
+set(gca,'xtick',[1:6],'xticklabel',age_buckets, 'fontSize',18)
 
 save('dataBalancedAndCleaned.mat')

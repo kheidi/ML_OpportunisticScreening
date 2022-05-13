@@ -16,7 +16,7 @@ ageCT_D = data_clean(idx_D,5);
 days_from_CT = data_clean(idx_D, 13);
 ageDeath = ageCT_D + (days_from_CT/365);
 
-y = round(ageDeath);
+y = (ageDeath);
 kFolds = 10;
 KNNfolds = 5;
 
@@ -29,6 +29,9 @@ c = cvpartition(length(y),'KFold',kFolds);
 
 % Normalize X
 [X, maxes, mins] = normalizeMatByCols(X);
+% Age at CT and Age at Last Visit are added after normalizing data as we
+% saw that this causes the columns to be weighted and subsequently achieve
+% higher accuracy.
 X(:,12) = CD(idx_D,4);
 X(:,13) = CD(idx_D,4) + (data_clean(idx_D,1)/365);
 
@@ -88,7 +91,7 @@ matlab_nearestNeighbor_total = fitcknn(X,y,'NumNeighbors', KNNfolds, 'Distance',
 final_predicted = predict(matlab_nearestNeighbor_total,X_alive);
 
 figure;
-plot(CD(~idx_D,4),final_predicted,'.')
+plot(CD(~idx_D,4),final_predicted,'o')
 hold on
 plot(20:105,20:105)
 xlabel('Age at CT (years)')
